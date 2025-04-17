@@ -1,0 +1,7 @@
+Testing for Upload command
+path url:
+al: (change for yours)
+/Users/alnaheyan/Desktop/projects/Cryo/testUpload.txt
+
+relative Path:
+testUpload.txt
