@@ -13,14 +13,16 @@ struct Cli {
 enum Commands {
     #[clap(alias = "u", alias = "up")]
     Upload(commands::upload::UploadArgs),
+
+    #[clap(alias = "d", alias = "down")]
+    Download(commands::download::DownloadArgs),
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match cli.command {
-        Commands::Upload(args) => {
-            commands::upload::upload_file_cmd(args);
-        }
+        Commands::Upload(args) => commands::upload::upload_file_cmd(args),
+        Commands::Download(args) => commands::download::download_file_cmd(args),
     }
 }
