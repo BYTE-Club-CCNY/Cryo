@@ -6,6 +6,7 @@ use ffsend_api::{
     api::Version,
     client::ClientConfigBuilder,
     file::remote_file::RemoteFile,
+    action::params::ParamsData,
 };
 use url::Url;
 
@@ -37,13 +38,16 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
 
     let version = Version::V3;
 
+    // expiry time is in seconds, 605800 = 7 days
+    let params = ParamsData::from(Some(5), Some(604800)); 
+
     let upload = Upload::new(
         version,
         Url::parse("https://send.vis.ee/").expect("Invalid URL"),
         path,
-        None, // password: optional
-        None, // expiry: optional
-        None, // download limit: optional
+        None, 
+        None, 
+        Some(params), 
     );
 
     Upload::invoke(upload, &client, None)
