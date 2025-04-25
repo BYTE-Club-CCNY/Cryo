@@ -53,7 +53,8 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
     let params = {
         let params = ParamsDataBuilder::default()
             .download_limit(Some(5))
-            .expiry_time(Some(604_800))
+            // TODO: Debug why expiry time is causing issues
+            .expiry_time(Some(259_800))
             .build()
             .unwrap();
 
