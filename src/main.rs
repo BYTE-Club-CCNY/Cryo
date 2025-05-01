@@ -16,6 +16,9 @@ enum Commands {
 
     #[clap(alias = "d", alias = "down")]
     Download(commands::download::DownloadArgs),
+
+    #[clap(alias = "e")]
+    Exists(commands::exists::ExistsArgs),
 }
 
 fn main() {
@@ -24,5 +27,6 @@ fn main() {
     match cli.command {
         Commands::Upload(args) => commands::upload::upload_file_cmd(args),
         Commands::Download(args) => commands::download::download_file_cmd(args),
+        Commands::Exists(args) => commands::exists::exists_cmd(args),
     }
 }
