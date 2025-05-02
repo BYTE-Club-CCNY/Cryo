@@ -45,7 +45,6 @@ fn download_file(url: String) -> Result<PathBuf, Box<dyn std::error::Error>> {
         version,
         &file,
         target_path.clone(),
-        // TODO: password might be an issue if a user has uploaded w password. Current action doesn't account of it. 
         None, 
         true,
         Some(metadata_response),
