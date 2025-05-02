@@ -106,10 +106,7 @@ fn save_token(file_id: &str, owner_token: &str) -> std::io::Result<()> {
         match File::open(path_file) {
             Ok(file) => {
                 let reader = BufReader::new(file);
-                match serde_json::from_reader(reader) {
-                    Ok(data) => data,
-                    Err(_) => HashMap::new(),
-                }
+                serde_json::from_reader(reader).unwrap_or_default() 
             }
             // else no file yet :(
             Err(_) => HashMap::new(), 
