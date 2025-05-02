@@ -126,3 +126,17 @@ fn save_token(file_id: &str, owner_token: &str) -> std::io::Result<()> {
 
     Ok(())
 }
+
+
+pub fn read_tokens_from_file(path: &str) -> std::io::Result<HashMap<String, OwnerToken>> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let tokens: HashMap<String, OwnerToken> = serde_json::from_reader(reader)
+        .unwrap_or_else(|_| {
+            println!("Failed to deserialize, returning empty map");
+            HashMap::new()
+        });
+
+    Ok(tokens)
+}
