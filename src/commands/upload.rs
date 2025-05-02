@@ -8,7 +8,14 @@ use ffsend_api::{
     client::ClientConfigBuilder,
     file::remote_file::RemoteFile,
 };
-use std::path::PathBuf;
+use serde::{Deserialize, Serialize};
+
+use std::{
+    collections::HashMap,
+    fs::{File, OpenOptions},
+    io::{BufReader, Write},
+    path::PathBuf,
+};
 use url::Url;
 
 
@@ -18,14 +25,29 @@ pub struct UploadArgs {
     pub file: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
+struct OwnerToken {
+    owner_token: String,
+}
+
 pub fn upload_file_cmd(args: UploadArgs) {
     let path = PathBuf::from(args.file);
 
     
     match upload_file(path) {
         Ok(remote_file) => {
-            let share_url = remote_file.download_url(true);
+            let share_url: Url = remote_file.download_url(true);
             println!("Share URL: {}", share_url);
+            if let Some(token) = remote_file.owner_token() {
+                let file_id = remote_file.id();
+                if let Err(e) = save_token(file_id, token) {
+                    eprintln!("failed to save owner token: {}", e);
+                } else {
+                    println!("onwer token saved");
+                }
+            } else {
+                println!("no Onwer token found from server");
+            }
         }
         // Added this line to see exactly what kind of error we get when uploading.
         Err(Error::Upload(e)) => {
@@ -46,15 +68,13 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
 
     let version = Version::V3;
 
-    // expiry time is in seconds, 604800 = 7 days
-
     // The following code is what is used in ffsend itself for it's upload command.
     // Seems like best practice, hence why I changed it
     let params = {
         let params = ParamsDataBuilder::default()
             .download_limit(Some(5))
             // TODO: Debug why expiry time is causing issues
-            .expiry_time(Some(259_800))
+            .expiry_time(Some(3600))
             .build()
             .unwrap();
 
@@ -65,8 +85,6 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
         }
     };
 
-    // let progress_bar = Arc::new(Mutex::new(ProgressBar::new_upload()));
-    // let progress_reporter: Arc<Mutex<dyn ProgressReporter>> = progress_bar;
     
     let upload = Upload::new(
         version,
@@ -78,4 +96,47 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
     );
 
     Upload::invoke(upload, &client, None)
+}
+
+fn save_token(file_id: &str, owner_token: &str) -> std::io::Result<()> {
+    let path_file = "owner_token.json";
+
+    let mut tokens: HashMap<String, OwnerToken> = {
+        // open file and deseriilize
+        match File::open(path_file) {
+            Ok(file) => {
+                let reader = BufReader::new(file);
+                serde_json::from_reader(reader).unwrap_or_default() 
+            }
+            // else no file yet :(
+            Err(_) => HashMap::new(), 
+        }
+    };
+    // writes out the object, file id as key and token as value
+    tokens.insert(
+        file_id.to_string(),
+        OwnerToken {
+            owner_token: owner_token.to_string(),
+        },
+    );
+
+    let json = serde_json::to_string_pretty(&tokens)?;
+    let mut file = OpenOptions::new().create(true).write(true).truncate(true).open(path_file)?;
+    file.write_all(json.as_bytes())?;
+
+    Ok(())
+}
+
+
+pub fn read_tokens_from_file(path: &str) -> std::io::Result<HashMap<String, OwnerToken>> {
+    let file = File::open(path)?;
+    let reader = BufReader::new(file);
+
+    let tokens: HashMap<String, OwnerToken> = serde_json::from_reader(reader)
+        .unwrap_or_else(|_| {
+            println!("Failed to deserialize, returning empty map");
+            HashMap::new()
+        });
+
+    Ok(tokens)
 }
