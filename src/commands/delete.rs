@@ -1,9 +1,11 @@
 use clap::Args;
 use ffsend_api::{
-    action::delete::{self, Delete},
-    api::Version,
+    action::delete::Delete,
     client::ClientConfigBuilder,
+    file::remote_file::RemoteFile,
 };
+use crate::commands::upload::{read_tokens_from_file, OwnerToken};
+use std::{collections::HashMap, error::Error};
 use url::Url;
 
 #[derive(Args)]
@@ -12,29 +14,34 @@ pub struct DeleteArgs {
     pub url: String,
 }
 
+/// delete subcommand logic
 pub fn delete_cmd(args: DeleteArgs) {
-    let url = match Url::parse(&args.url) {
-        Ok(u) => u,
-        Err(_) => {
-            println!("false");
-            return;
-        }
-    };
-
-    match delete_file(url) {
-        Ok(true) => println!("true"),
-        Ok(false) => println!("false"),
-        Err(_) => println!("false"),
+    match delete_file(args.url) {
+        Ok(true) => println!("File deleted"),
+        Ok(false) => eprintln!("Failed to delete file"),
+        Err(e) => eprintln!("Delete failed: {}", e),
     }
 }
 
-fn delete_file(url: Url) -> Result<bool, Box<dyn std::error::Error>> {
-    let client_config = ClientConfigBuilder::default()
-        .build()?
-        .client(true);
+fn delete_file(url: String) -> Result<bool, Box<dyn Error>> {
+    let url = Url::parse(&url)?;
 
-    let delete = Delete::new(Version::V3, url);
-    let result = delete::invoke(delete, &client_config)?;
+    let client_config = ClientConfigBuilder::default().build()?;
+    let client = client_config.client(true);
 
-    Ok(result.deleted)
+    let file = RemoteFile::parse_url(url.clone(), None)?;
+    let file_id = file.id();
+
+    // Load tokens and fetch owner token for the file
+    let tokens: HashMap<String, OwnerToken> = read_tokens_from_file("owner_token.json")?;
+    let token = tokens
+        .get(file_id)
+        .ok_or("Token not found")?
+        .owner_token
+        .clone();
+
+    let delete = Delete::new(&file, Some(token.into_bytes()));
+    let result = delete.invoke(&client);
+
+    Ok(result.is_ok())
 }

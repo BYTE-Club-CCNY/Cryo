@@ -19,6 +19,9 @@ enum Commands {
 
     #[clap(alias = "e")]
     Exists(commands::exists::ExistsArgs),
+
+    #[clap(alias = "del")]
+    Delete(commands::delete::DeleteArgs),
 }
 
 fn main() {
@@ -28,5 +31,6 @@ fn main() {
         Commands::Upload(args) => commands::upload::upload_file_cmd(args),
         Commands::Download(args) => commands::download::download_file_cmd(args),
         Commands::Exists(args) => commands::exists::exists_cmd(args),
+        Commands::Delete(args) => commands::delete::delete_cmd(args),
     }
 }

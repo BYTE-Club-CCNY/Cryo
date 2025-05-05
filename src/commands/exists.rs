@@ -6,35 +6,30 @@ use ffsend_api::{
 };
 use url::Url;
 
+/// Arguments for the `exists` subcommand
 #[derive(Args)]
 pub struct ExistsArgs {
     /// URL to check
     pub url: String,
 }
 
+/// exists subcommand logic
 pub fn exists_cmd(args: ExistsArgs) {
-    let url = match Url::parse(&args.url) {
-        Ok(u) => u,
-        Err(_) => {
-            println!("false");
-            return;
-        }
-    };
-
-    match check_exists(url) {
-        Ok(result) => println!("{}", result),
+    match check_exists(args.url) {
+        Ok(exists) => println!("{}", exists),
         Err(_) => println!("false"),
     }
 }
 
-fn check_exists(url: Url) -> Result<bool, Box<dyn std::error::Error>> {
-    let client_config = ClientConfigBuilder::default()
-        .build()?
-        .client(true);
+fn check_exists(url: String) -> Result<bool, Box<dyn std::error::Error>> {
+    let url = Url::parse(&url)?;
+
+    let client_config = ClientConfigBuilder::default().build()?;
+    let client = client_config.client(true);
 
     let remote_file = RemoteFile::parse_url(url, None)?;
-    let exists = Exists::new(&remote_file);
-    let result = Exists::invoke(exists, &client_config)?;
+    let exists_action = Exists::new(&remote_file);
+    let result = Exists::invoke(exists_action, &client)?;
 
     Ok(result.exists())
 }

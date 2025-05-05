@@ -8,6 +8,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "ffsend-api",
+ "serde",
+ "serde_json",
  "url 2.5.4",
 ]
 
