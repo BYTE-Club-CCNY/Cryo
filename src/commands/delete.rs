@@ -25,14 +25,12 @@ pub fn delete_cmd(args: DeleteArgs) {
 
 fn delete_file(url: String) -> Result<bool, Box<dyn Error>> {
     let url = Url::parse(&url)?;
-
     let client_config = ClientConfigBuilder::default().build()?;
     let client = client_config.client(true);
 
-    let file = RemoteFile::parse_url(url.clone(), None)?;
+    let mut file = RemoteFile::parse_url(url.clone(), None)?;
     let file_id = file.id();
 
-    // Load tokens and fetch owner token for the file
     let tokens: HashMap<String, OwnerToken> = read_tokens_from_file("owner_token.json")?;
     let token = tokens
         .get(file_id)
@@ -40,7 +38,8 @@ fn delete_file(url: String) -> Result<bool, Box<dyn Error>> {
         .owner_token
         .clone();
 
-    let delete = Delete::new(&file, Some(token.into_bytes()));
+    file.set_owner_token(Some(token));
+    let delete = Delete::new(&file, None);
     let result = delete.invoke(&client);
 
     Ok(result.is_ok())
