@@ -26,8 +26,8 @@ pub struct UploadArgs {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct OwnerToken {
-    owner_token: String,
+pub struct OwnerToken {
+    pub owner_token: String,
 }
 
 pub fn upload_file_cmd(args: UploadArgs) {
@@ -140,3 +140,4 @@ pub fn read_tokens_from_file(path: &str) -> std::io::Result<HashMap<String, Owne
 
     Ok(tokens)
 }
+

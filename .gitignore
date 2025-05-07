@@ -21,3 +21,6 @@ owner_token.json
 # Added by cargo
 
 /target
+
+# Sensitive token file - do not track
+owner_token.json
