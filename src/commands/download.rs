@@ -38,7 +38,7 @@ fn download_file(url: String) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let metadata_response: MetadataResponse = MetadataAction::new(&file, None, true)
         .invoke(&client)?;
     let file_name = metadata_response.metadata().name();
-    let target_path: PathBuf = std::env::current_dir()?.join(file_name);
+    let target_path: PathBuf = std::env::current_dir()?.join("downloads").join(file_name);
 
     // build download action with the fetched metadata to avoid refetching
     let download = Download::new(
