@@ -17,7 +17,7 @@ pub struct ExistsArgs {
 pub fn exists_cmd(args: ExistsArgs) {
     match check_exists(args.url) {
         Ok(exists) => println!("{}", exists),
-        Err(_) => println!("false"),
+        Err(_) => println!("This file was deleted or does not exist."),
     }
 }
 
