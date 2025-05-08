@@ -9,5 +9,4 @@ ffsend-api = {version = "0.7.3", features = ["send3"]}
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 url = "2"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+terminal-menu = "3.0.0"

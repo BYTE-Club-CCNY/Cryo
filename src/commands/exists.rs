@@ -16,8 +16,15 @@ pub struct ExistsArgs {
 /// exists subcommand logic
 pub fn exists_cmd(args: ExistsArgs) {
     match check_exists(args.url) {
-        Ok(exists) => println!("{}", exists),
-        Err(_) => println!("false"),
+        Ok(true) => {
+            println!("True, this file exists.");
+        }
+        Ok(false) => {
+            println!("False, this file does not exist.");
+        }
+        Err(_) => {
+            println!("This file was deleted or does not exist.");
+        }
     }
 }
 
