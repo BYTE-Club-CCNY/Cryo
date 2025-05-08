@@ -2,7 +2,7 @@
 A secure file sharing cli written in Rust.
 
 
-## Commands:
+## Clap commands:
 
 #### To upload a file, 
 
