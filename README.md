@@ -5,6 +5,9 @@ A secure file sharing cli written in Rust.
 ## Commands:
 
 #### To upload a file, 
+
+*Small note: If you're copy/pasting from cmd/terminal, make sure to copy path without newline or type file path manually.*
+
 ```
 cargo run -- upload <file_path>
 ```
