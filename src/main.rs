@@ -26,6 +26,9 @@ enum Commands {
 
     #[clap(alias = "del")]
     Delete(commands::delete::DeleteArgs),
+
+    #[clap(alias = "i")]
+    Info(commands::info::InfoArgs),
 }
 
 
@@ -42,6 +45,7 @@ fn main() {
             Commands::Download(args) => commands::download::download_file_cmd(args),
             Commands::Exists(args) => commands::exists::exists_cmd(args),
             Commands::Delete(args) => commands::delete::delete_cmd(args),
+            Commands::Info(args) => commands::info::info_cmd(args),
         }
     }
 }

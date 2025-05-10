@@ -1,7 +1,6 @@
 # Cryo
 A secure file sharing cli written in Rust.
 
-
 ## Clap commands:
 
 #### To upload a file, 
