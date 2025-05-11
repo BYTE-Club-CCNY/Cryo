@@ -26,6 +26,9 @@ enum Commands {
 
     #[clap(alias = "del")]
     Delete(commands::delete::DeleteArgs),
+
+    #[clap(alias = "i")]
+    Info(commands::info::InfoArgs),
 }
 
 
@@ -42,10 +45,11 @@ fn main() {
             Commands::Download(args) => commands::download::download_file_cmd(args),
             Commands::Exists(args) => commands::exists::exists_cmd(args),
             Commands::Delete(args) => commands::delete::delete_cmd(args),
+            Commands::Info(args) => commands::info::info_cmd(args),
         }
     }
 }
-
+// TODO: Add info to menu
 fn run_menu() {
     loop {
         let main_menu = menu(vec![
@@ -55,6 +59,7 @@ fn run_menu() {
             button("Upload"),
             button("Download"),
             button("Exists"),
+            button("Information"),
             button("Delete"),
             button("Exit"),
             ]);
@@ -92,6 +97,16 @@ fn run_menu() {
                 io::stdin().read_line(&mut url).unwrap();
                 commands::exists::exists_cmd(
                     commands::exists::ExistsArgs { url: url.trim().into() }
+                );
+            }
+
+            "Information" => {
+                print!("Enter link to check all the information for the file: ");
+                io::stdout().flush().unwrap();
+                let mut url = String::new();
+                io::stdin().read_line(&mut url).unwrap();
+                commands::info::info_cmd(
+                    commands::info::InfoArgs { url: url.trim().into() }
                 );
             }
 

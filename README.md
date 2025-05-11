@@ -1,7 +1,6 @@
 # Cryo
 A secure file sharing cli written in Rust.
 
-
 ## Clap commands:
 
 #### To upload a file, 
@@ -25,5 +24,10 @@ cargo run -- download <client_link>
 #### To delete any file, 
 ```
 cargo run -- delete <client_link>
+```
+
+### To check a files information,
+```
+cargo run -- info <client_link>
 ```
 
