@@ -43,10 +43,10 @@ pub fn upload_file_cmd(args: UploadArgs) {
                 if let Err(e) = save_token(file_id, token) {
                     eprintln!("failed to save owner token: {}", e);
                 } else {
-                    println!("onwer token saved");
+                    println!("Owner token saved");
                 }
             } else {
-                println!("no Onwer token found from server");
+                println!("no owner token found from server");
             }
         }
         // Added this line to see exactly what kind of error we get when uploading.
@@ -73,7 +73,6 @@ fn upload_file(path: PathBuf) -> Result<RemoteFile, Error> {
     let params = {
         let params = ParamsDataBuilder::default()
             .download_limit(Some(5))
-            // TODO: Debug why expiry time is causing issues
             .expiry_time(Some(3600))
             .build()
             .unwrap();

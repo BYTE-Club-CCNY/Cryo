@@ -26,3 +26,8 @@ cargo run -- download <client_link>
 cargo run -- delete <client_link>
 ```
 
+### To check a files information,
+```
+cargo run -- info <client_link>
+```
+
